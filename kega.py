@@ -10,7 +10,7 @@ KEGE_API_URI='https://kompege.ru/api/v1'
 
 ap = argparse.ArgumentParser(prog="dokega")
 ap.add_argument('kim', help='Номер КИМ')
-ap.add_argument('-t', action='store', dest='token', help='Токен авторизации. Если не указан, то берётся из ~/.kege-token или stdin')
+ap.add_argument('-t', action='store', dest='token', help='Токен авторизации. Если не указан, то берётся из $KEGE_TOKEN, ~/.kege-token или stdin')
 ap.add_argument('-s', action='store_true', dest='dont_send', help='Вывести ответы в stdout и не отправлять их на кегу')
 ap.add_argument('-m', action='store', dest='mistakes', help='Список заданий, к которым будет отправлен ответ с ошибкой')
 ap.add_argument('-e', action='store', dest='empty', help='Список заданий, к которым будет отправлен пустой ответ')
@@ -30,8 +30,12 @@ duration = (int(args.hours) * 3600 + int(args.minutes) * 60) * 1000
 
 if args.token is None:
     try:
-        token_file = open(os.path.expanduser('~/.kege-token'))
-        args.token = token_file.read().strip(' \t\n\r')
+        env = os.environ.get("KEGE_TOKEN")
+        if env is not None:
+            args.token = env
+        else:
+            token_file = open(os.path.expanduser('~/.kege-token'))
+            args.token = token_file.read().strip(' \t\n\r')
     except:
         args.token = input('Введите токен авторизации: ').strip()
 
@@ -71,7 +75,7 @@ else:
 
 
 def convert_score(primary_score: int, max_primary_score: int):
-   score_tab= {
+    score_tab= {
         0: 0,
         1: 8,
         2: 15,
@@ -102,8 +106,8 @@ def convert_score(primary_score: int, max_primary_score: int):
         27: 93,
         28: 95,
         29: 100
-   }
-   return score_tab[min(round(primary_score/max_primary_score * 29), 29)]
+    }
+    return score_tab[min(round(primary_score/max_primary_score * 29), 29)]
 
 
 if args.dont_send:
