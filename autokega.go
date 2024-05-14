@@ -9,10 +9,11 @@ import (
 
 const WORKERS = 10
 const START = 0
+const KEGA_PATH = "./kega.py"
 
 func doVar(num int) {
     time := rand.Int() % 120 + 120
-    cmd := exec.Command("kega", "-y", fmt.Sprintf("-M%v", time), fmt.Sprint(num))
+    cmd := exec.Command(KEGA_PATH, "-y", fmt.Sprintf("-M%v", time), fmt.Sprint(num))
     cmd.Output()
     fmt.Println(num)
 }
